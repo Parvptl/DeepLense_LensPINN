@@ -1,0 +1,58 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Common Test I — Multi-Class Gravitational Lens Classification
+# EfficientNet-B3 with transfer learning
+# Final result: Macro AUC = 0.9553 on val/
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+data_dir: "./dataset"           # root containing train/ and val/ subfolders
+#  Kaggle: "/kaggle/input/your-dataset/dataset"
+#  Colab:  "/content/dataset"
+class_names: ["no", "sphere", "vort"]
+display_names: ["No Substructure", "Sphere/Subhalo", "Vortex"]
+save_path: "best_model.pth"
+
+# ── Image ─────────────────────────────────────────────────────────────────────
+img_size: 224                   # resize to 224×224 for EfficientNet-B3
+
+# ── Model ─────────────────────────────────────────────────────────────────────
+backbone: "efficientnet_b3"     # torchvision pretrained on ImageNet
+num_classes: 3
+freeze_first_two_blocks: true   # freeze features.0 and features.1 layers
+
+# ── Training ──────────────────────────────────────────────────────────────────
+batch_size: 32
+epochs: 30
+patience: 7                     # early stopping patience (on internal split loss)
+val_split: 0.15                 # 15% of train/ carved for early stopping only
+num_workers: 2                  # set 0 on Windows if DataLoader errors occur
+
+# ── Optimiser ─────────────────────────────────────────────────────────────────
+lr: 3.0e-4                      # head learning rate
+lr_backbone_multiplier: 0.1     # backbone LR = lr * 0.1 (differential LR)
+weight_decay: 1.0e-4
+scheduler: "cosine_warm_restarts"
+T_0: 10                         # CosineAnnealingWarmRestarts restart period
+T_mult: 2
+
+# ── Loss ──────────────────────────────────────────────────────────────────────
+label_smoothing: 0.1
+
+# ── Augmentation ──────────────────────────────────────────────────────────────
+# D4 symmetry group: 4 rotations × 2 flips (applied to .npy files)
+# Physically motivated — lensing images are rotationally symmetric
+augmentation:
+  horizontal_flip: true
+  vertical_flip: true
+  rotations: [0, 90, 180, 270]  # torch.rot90 for .npy; RandomRotation(180) for PIL
+
+# ── Class imbalance ───────────────────────────────────────────────────────────
+use_weighted_sampler: true      # WeightedRandomSampler for balanced batches
+
+# ── Normalisation ─────────────────────────────────────────────────────────────
+# ImageNet statistics — applied after expanding single-channel to 3-channel
+imagenet_mean: [0.485, 0.456, 0.406]
+imagenet_std:  [0.229, 0.224, 0.225]
+
+# ── Reproducibility ───────────────────────────────────────────────────────────
+seed: 42

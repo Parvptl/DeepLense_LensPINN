@@ -1,0 +1,27 @@
+# DeepLense-LensPINN-v2 — Python dependencies
+# Tested on Python 3.10, CUDA 11.8 / 12.1
+# Install: pip install -r requirements.txt
+
+# ── Core deep learning ────────────────────────────────────────────────────────
+torch>=2.0.0
+torchvision>=0.15.0
+
+# ── Scientific computing ──────────────────────────────────────────────────────
+numpy>=1.24.0
+scipy>=1.10.0
+
+# ── Data / ML utilities ───────────────────────────────────────────────────────
+scikit-learn>=1.2.0
+
+# ── Visualisation ─────────────────────────────────────────────────────────────
+matplotlib>=3.7.0
+
+# ── Config parsing ────────────────────────────────────────────────────────────
+pyyaml>=6.0
+
+# ── Jupyter / notebooks ───────────────────────────────────────────────────────
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# ── Image loading (fallback for non-npy formats) ──────────────────────────────
+Pillow>=9.0.0
